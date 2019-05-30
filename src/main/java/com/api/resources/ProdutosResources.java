@@ -1,6 +1,7 @@
 package com.api.resources;
 
 import com.api.domain.Produtos;
+import com.api.repository.ProdutosRepository;
 import com.api.services.ProdutosService;
 import com.api.services.exceptions.ProdutoNaoEncontradoException;
 import java.net.URI;
@@ -21,6 +22,9 @@ public class ProdutosResources {
     
     @Autowired
     private ProdutosService  produtosService;
+    
+    @Autowired
+    private ProdutosRepository produtosRepository;
     
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<Produtos>> listarAll() {
