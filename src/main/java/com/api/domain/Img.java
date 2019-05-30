@@ -4,19 +4,19 @@ import java.util.Date;
 
 class Img {
     
-    private Long idImg;
+    private Long id;
     private String url;
     private String descricao;
     private Date dataCriacao;
     private Date dataAlteracao;
     private Date dataExclusao;
 
-    public Long getIdImg() {
-        return idImg;
+    public Long getId() {
+        return id;
     }
 
-    public void setIdImg(Long idImg) {
-        this.idImg = idImg;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUrl() {

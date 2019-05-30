@@ -15,7 +15,7 @@ public class Produtos {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idProduto;
+    private Long id;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String nome;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -38,12 +38,12 @@ public class Produtos {
     @Transient
     private List<Img> imgs;
 
-    public Long getIdProduto() {
-        return idProduto;
+    public Long getId() {
+        return id;
     }
 
-    public void setIdProduto(Long idProduto) {
-        this.idProduto = idProduto;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNome() {

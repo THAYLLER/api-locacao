@@ -2,9 +2,10 @@ package com.api.resources;
 
 import com.api.domain.Produtos;
 import com.api.repository.ProdutosRepository;
-import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,17 +24,18 @@ public class ProdutosResources {
         
         return produtosRepository.findAll();
     }
-    
+    @RequestMapping(value="/{id}", method = RequestMethod.GET)
+    public ResponseEntity<?>  buscar(@PathVariable("id") Long id) {
+        
+        Produtos produtos =  produtosRepository.getOne(id);
+        if(produtos == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        
+        return ResponseEntity.status(HttpStatus.OK).body(produtos);
+    }
     @RequestMapping(method = RequestMethod.POST)
     public void salvar(@RequestBody Produtos produtos) {
         
         produtosRepository.save(produtos);
-    }
-    @RequestMapping(value="/{id}", method = RequestMethod.GET)
-    public Produtos buscar(@PathVariable("id") Long id) {
-        
-        Produtos produtos = produtosRepository.getOne(id);
-        return produtos;
     }
     @RequestMapping(value="/{id}", method = RequestMethod.DELETE)
     public void deletar(@PathVariable("id") Long id) {
@@ -44,7 +46,7 @@ public class ProdutosResources {
     @RequestMapping(value="{id}",method = RequestMethod.PUT)
     public void atualizar(@RequestBody Produtos produtos,@PathVariable("id") Long id) {
         
-        produtos.setIdProduto(id);
+        produtos.setId(id);
         produtosRepository.save(produtos);
     }
 }
