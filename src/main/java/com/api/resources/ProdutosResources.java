@@ -1,7 +1,9 @@
 package com.api.resources;
 
 import com.api.domain.Produtos;
-import com.api.repository.ProdutosRepository;
+import com.api.services.ProdutosService;
+import com.api.services.exceptions.ProdutoNaoEncontradoException;
+import java.net.URI;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,42 +13,66 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping(value="/produtos")
 public class ProdutosResources {
     
     @Autowired
-    private ProdutosRepository  produtosRepository;
+    private ProdutosService  produtosService;
     
     @RequestMapping(method = RequestMethod.GET)
-    public List<Produtos> listarAll() {
+    public ResponseEntity<List<Produtos>> listarAll() {
         
-        return produtosRepository.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(produtosService.listarAll());
     }
+    
     @RequestMapping(value="/{id}", method = RequestMethod.GET)
     public ResponseEntity<?>  buscar(@PathVariable("id") Long id) {
         
-        Produtos produtos =  produtosRepository.getOne(id);
-        if(produtos == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        
+        Produtos produtos = null;
+       
+        try {
+              produtos =  produtosService.buscar(id);
+        } catch (Exception e) {
+            
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         return ResponseEntity.status(HttpStatus.OK).body(produtos);
     }
+    
     @RequestMapping(method = RequestMethod.POST)
-    public void salvar(@RequestBody Produtos produtos) {
+    public ResponseEntity<Void> salvar(@RequestBody Produtos produtos) {
         
-        produtosRepository.save(produtos);
+        produtos = produtosService.salvar(produtos);
+        
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}").buildAndExpand(produtos.getId()).toUri();
+        
+        return ResponseEntity.created(uri).build();
     }
+    
     @RequestMapping(value="/{id}", method = RequestMethod.DELETE)
-    public void deletar(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable("id") Long id) {
         
-        produtosRepository.deleteById(id);
+        try {
+            
+            produtosService.deletar(id);
+        } catch (ProdutoNaoEncontradoException e) {
+            
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        
+        return ResponseEntity.noContent().build();
     }
-    //parei na aula 2.9 da algarworks
+    
     @RequestMapping(value="{id}",method = RequestMethod.PUT)
-    public void atualizar(@RequestBody Produtos produtos,@PathVariable("id") Long id) {
+    public ResponseEntity<Void> atualizar(@RequestBody Produtos produtos,@PathVariable("id") Long id) {
         
         produtos.setId(id);
         produtosRepository.save(produtos);
+        
+        return ResponseEntity.noContent().build();
     }
 }
